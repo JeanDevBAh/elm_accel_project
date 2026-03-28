@@ -1,0 +1,75 @@
+module act_pwl #(
+    // Permite ajustar os pontos de joelho sem recompilar
+    parameter signed [15:0] X_POS_SAT = 16'sd10240,  // +2.5 em Q4.12
+    parameter signed [15:0] X_NEG_SAT = -16'sd10240  // -2.5 em Q4.12
+)(
+    input  wire              clk,
+    input  wire              enable,
+    input  wire              reset,
+    input  logic signed [15:0] valor_x,   // Q4.12
+    output logic        [15:0] valor_h    // Q4.12  (0.0 → 0x0000, 1.0 → 0x1000)
+);
+
+    // ----------------------------------------------------------------
+    // CORREÇÃO 1: temp_mult declarado no escopo do módulo, com 'signed'
+    // ----------------------------------------------------------------
+    logic signed [31:0] temp_mult;
+    logic        [15:0] sigmoid_calc;
+
+    // ----------------------------------------------------------------
+    // Combinacional: aproximação PWL da sigmoid
+    //
+    //        │ 0.0            se x ≤ -2.5
+    //  f(x) =│ 0.2·x + 0.5   se -2.5 < x < +2.5
+    //        │ 1.0            se x ≥ +2.5
+    //
+    // Constantes Q4.12:
+    //   1.0  = 4096  = 16'h1000
+    //   0.5  = 2048  = 16'h0800
+    //   0.2  ≈  819  = 16'h0333  (erro 0.006%)
+    // ----------------------------------------------------------------
+    always_comb begin
+        if (valor_x >= X_POS_SAT) begin
+            sigmoid_calc = 16'h1000;                    // 1.0
+
+        end else if (valor_x <= X_NEG_SAT) begin
+            sigmoid_calc = 16'h0000;                    // 0.0
+
+        end else begin
+            // --- Produto Q4.12 × Q4.12 → Q8.24 em 32 bits -----------
+            // CORREÇÃO 2: multiplicador signed explícito
+            temp_mult = valor_x * 16'sd819;
+
+            // CORREÇÃO 3: extração correta Q8.24 → Q4.12
+            //   produto ocupa bits [31:0] no formato Q8.24
+            //   para Q4.12 precisamos dos bits [27:16]  ← era [27:12] (ERRADO)
+            //
+            //   bit 27 = inteiro MSB (peso 2^3)
+            //   bit 16 = fracionário LSB (peso 2^-12)
+            //
+            //   Somamos 0.5 (0x0800) para o termo linear
+            logic signed [15:0] ramp;
+            ramp = temp_mult[27:16] + 16'sh0800;
+
+            // CORREÇÃO 4: clamp — garante saída em [0x0000, 0x1000]
+            //   Sem isso, valores próximos dos joelhos podem vazar
+            if (ramp <= 16'sh0000)
+                sigmoid_calc = 16'h0000;
+            else if (ramp >= 16'sh1000)
+                sigmoid_calc = 16'h1000;
+            else
+                sigmoid_calc = ramp[15:0];
+        end
+    end
+
+    // ----------------------------------------------------------------
+    // Sequencial: registra a saída (latência = 1 ciclo)
+    // ----------------------------------------------------------------
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            valor_h <= 16'h0000;
+        else if (enable)
+            valor_h <= sigmoid_calc;
+    end
+
+endmodule

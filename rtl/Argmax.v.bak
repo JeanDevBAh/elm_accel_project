@@ -1,0 +1,66 @@
+module Argmax #(
+    parameter NUM_CLASSES = 10,
+    parameter IDX_W       = 4 
+)(
+    input  wire                   clk,
+    input  wire                   rst,
+    input  wire                   start_layer, // Pulso de 1 ciclo
+    input  wire                   valid_in,
+    input  wire signed [15:0]     data_in,     // Q4.12
+    input  wire        [IDX_W-1:0] curr_idx,
+    output reg         [IDX_W-1:0] argmax_idx,
+    output reg                    done         // Pulso de 1 ciclo no fim
+);
+
+    // Registradores internos
+    reg signed [15:0] max_val_reg;
+    reg               running;
+    reg               first_valid;
+
+    // Menor valor assinado de 16 bits (-32768)
+    localparam signed [15:0] MIN_SIGNED_16 = 16'sh8000;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            max_val_reg <= MIN_SIGNED_16;
+            argmax_idx  <= {IDX_W{1'b0}};
+            running     <= 1'b0;
+            first_valid <= 1'b0;
+            done        <= 1'b0;
+        end
+        else begin
+            // Reseta o pulso de done a cada ciclo
+            done <= 1'b0;
+
+            // --- Inicialização ---
+            if (start_layer) begin
+                max_val_reg <= MIN_SIGNED_16;
+                argmax_idx  <= {IDX_W{1'b0}};
+                running     <= 1'b1;
+                first_valid <= 1'b1;
+            end
+            
+            // --- Lógica de Comparação ---
+            else if (running && valid_in) begin
+                
+                if (first_valid) begin
+                    max_val_reg <= data_in;
+                    argmax_idx  <= curr_idx;
+                    first_valid <= 1'b0;
+                end
+                else if (data_in > max_val_reg) begin
+                    max_val_reg <= data_in;
+                    argmax_idx  <= curr_idx;
+                end
+
+                // --- Checagem de Finalização ---
+                // Compara com NUM_CLASSES - 1
+                if (curr_idx == (NUM_CLASSES[IDX_W-1:0] - 1'b1)) begin
+                    done    <= 1'b1;
+                    running <= 1'b0; 
+                end
+            end
+        end
+    end
+
+endmodule

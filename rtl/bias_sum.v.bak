@@ -1,0 +1,9 @@
+module bias_sum(
+input wire signed[15:0]bias,
+input wire signed[15:0]mac_out,
+output reg signed[15:0]resultado
+);
+
+wire signed[16:0]temp;
+
+assign temp = bias + mac_out;

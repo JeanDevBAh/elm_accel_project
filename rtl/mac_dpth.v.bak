@@ -1,0 +1,53 @@
+module mac_dpth (
+	input wire signed[15:0] d_in,
+	input wire signed[15:0] peso,
+	input wire clk,
+	input wire rst,
+	input wire clear,
+	input wire en,
+	
+	output reg signed[15:0] out
+);
+
+reg signed[31:0] acumulador;
+
+wire signed[31:0] prod;
+wire signed [31:0] full_sum;
+
+
+assign prod = d_in * peso;
+assign full_sum = acumulador + prod;
+
+// 3. Lógica do Registrador Acumulador
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            accumulator <= 32'd0;
+        end else if (clear) begin
+            // Agora, ao limpar, o acumulador volta para zero absoluto
+            accumulator <= 32'd0;
+        end else if (en) begin
+            accumulator <= next_acc;
+        end
+    end
+
+    // 4. Lógica de Saturação para a saída de 16 bits (Q4.12)
+    // Aqui usamos os bits [27:12] do acumulador de 32 bits
+    always @(*) begin
+        // Verificação de Overflow nos bits superiores (bits acima do formato Q4.12)
+        // Se os bits de 31 a 27 não forem todos iguais (todos 0 ou todos 1), houve overflow.
+        if (accumulator[31] == 0 && (accumulator[30:27] != 4'b0000)) begin
+            out = 16'h7FFF; // Saturar no máximo positivo
+        end 
+        else if (accumulator[31] == 1 && (accumulator[30:27] != 4'b1111)) begin
+            out = 16'h8000; // Saturar no mínimo negativo
+        end 
+        else begin
+            out = accumulator[27:12]; // Valor dentro da faixa normal
+        end
+    end
+
+
+
+endmodule
+
+
