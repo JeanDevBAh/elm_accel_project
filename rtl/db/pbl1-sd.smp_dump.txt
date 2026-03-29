@@ -1,0 +1,9 @@
+
+State Machine - |elm_accel|fsm:fsmbraba|state
+Name state.DONE_ST state.ARGMAX_ST state.OUTPUT_LAYER state.ACTIVATE state.HIDDEN_LAYER state.IDLE 
+state.IDLE 0 0 0 0 0 0 
+state.HIDDEN_LAYER 0 0 0 0 1 1 
+state.ACTIVATE 0 0 0 1 0 1 
+state.OUTPUT_LAYER 0 0 1 0 0 1 
+state.ARGMAX_ST 0 1 0 0 0 1 
+state.DONE_ST 1 0 0 0 0 1 

@@ -1,0 +1,17 @@
+Analysis & Synthesis Status : Successful - Sun Mar 29 18:27:09 2026
+Quartus Prime Version : 21.1.0 Build 842 10/21/2021 SJ Lite Edition
+Revision Name : pbl1-sd
+Top-level Entity Name : elm_accel
+Family : Cyclone V
+Logic utilization (in ALMs) : N/A
+Total registers : 535
+Total pins : 32
+Total virtual pins : 0
+Total block memory bits : 1,634,592
+Total DSP Blocks : 2
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 0
+Total DLLs : 0
