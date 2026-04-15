@@ -181,7 +181,7 @@ co-processador na FPGA.
 
 ## 7. Uso de Recursos FPGA
 
-> Tabela a ser preenchida após síntese no Quartus Prime.
+
 
 | Recurso | Utilizado | Disponível (Cyclone V) | % |
 |---------|-----------|------------------------|---|
