@@ -73,13 +73,7 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 
 ![Diagrama de Blocos](hardware/docs/Datapah+FSM.drawio.svg)
 
-### Periféricos de Interface Utilizados
 
-- **Switches (SW[0-9]):** Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
-- **Push-buttons (KEY[0-1]):** Mapeados para as funções de Reset do sistema e pulso de execução de instruções.
-- **Displays de 7 Segmentos (HEX0-5):** Utilizados para monitoramento em tempo real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos de performance.
-
----
 
 ## 6.Instalação e Configuração do Ambiente
 
@@ -117,6 +111,14 @@ git clone https://github.com/JeanDevBAh/elm_accel_project.git
 1. Abra o projeto `.qpf` no Quartus Prime.
 2. Execute a compilação completa para gerar o relatório de uso de recursos.
 3. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o co-processador na FPGA.
+
+### Periféricos de Interface Utilizados
+
+- **Switches (SW[0-9]):** Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
+- **Push-buttons (KEY[0-1]):** Mapeados para as funções de Reset do sistema e pulso de execução de instruções.
+- **Displays de 7 Segmentos (HEX0-5):** Utilizados para monitoramento em tempo real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos de performance.
+
+---
 
 ## 7. Uso de Recursos FPGA
 
