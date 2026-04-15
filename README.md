@@ -92,8 +92,8 @@ A comunicação futura via MMIO (Memory-Mapped I/O) poderá utilizar os seguinte
 ## 4.1 Conjunto de Instruções (ISA)
 
 O co-processador implementa **operações controladas por um opcode de 3 bits**.  
-No **Marco 01**, essas operações são demonstradas por meio de uma **interface compacta de bancada com switches**.  
-No **Marco 02**, elas serão associadas a uma interface **MMIO com banco de registradores**.
+No **Marco 01**, essas operações são demonstradas por meio de uma **interface compacta de bancada com switches** e com o banco de registradores preliminar.  
+No **Marco 02**, elas serão associadas a uma interface **MMIO**.
 
 | Opcode | Mnemônico      | Código | Descrição |
 |:------:|:---------------|:------:|:----------|
