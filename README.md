@@ -78,9 +78,9 @@ Para a validação e testes do co-processador ELM, foi utilizada a plataforma de
 
 ## 5. Diagrama de Blocos
 
-O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_blocos.svg`](docs/Datapah+FSM.drawio.svg).
+O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_blocos.svg`](hardware/docs/Datapah+FSM.drawio.svg).
 
-![Diagrama de Blocos](docs/Datapah+FSM.drawio.svg)
+![Diagrama de Blocos](hardware/docs/Datapah+FSM.drawio.svg)
 
 Periféricos de Interface Utilizados: 
 ###
