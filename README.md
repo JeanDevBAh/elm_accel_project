@@ -99,7 +99,7 @@ bias b e pesos β.
 
 ### Interface Hardware-Software (MMIO)
 
-A comunicação entre o processador ARM (HPS) e o co-processador na FPGA é
+A comunicação entre o processador ARM (HPS) e o co-processador na FPGA vai ser
 realizada via Memory-Mapped I/O (MMIO), utilizando a bridge HPS-to-FPGA
 disponível na plataforma DE1-SoC. Nesse modelo, registradores internos do
 co-processador são mapeados em endereços do espaço de memória do ARM, permitindo
