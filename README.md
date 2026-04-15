@@ -2,7 +2,7 @@
 
 ## 1. Levantamento de Requisitos
 
-### Funcionais
+### E/S
 - Receber imagem 28×28 pixels (784 bytes, 8 bits/pixel, escala de cinza)
 - Calcular camada oculta: `h = sigmoid(W_in · x + b)`, com 128 neurônios
 - Calcular camada de saída: `y = β · h`, com 10 classes
@@ -10,11 +10,19 @@
 - Sinalizar `busy`, `done` e `error` ao controlador externo
 - Expor contador de ciclos (`cycles`) para medição de desempenho
 
-### Não-Funcionais
-- Arquitetura **sequencial** (um MAC compartilhado, um estado ativo por vez)
-- Representação numérica em **ponto fixo Q4.12**
-- Pesos armazenados em RAMs/ROMs inicializadas via arquivos MIF/HEX
-- Sintetizável para **Intel DE1-SoC** (Cyclone V) com Quartus Prime
+### Estrurtura
+Implementar inferência ELM com pesos fornecidos.
+● A arquitetura deve sequencial
+● Deve haver:
+○ FSM de controle
+○ datapath MAC (multiplica-acumula)
+○ ativação aproximada (LUT ou piecewise linear)
+○ argmax final
+○ memórias para armazenamento dos dados
+○ banco de registradores
+● Valores devem ser representados em ponto fixo (fix-point) no formato Q4.12.
+● Pesos podem residir em ROM inicializada (MIF/HEX) ou blocos RAM/ROM inferidos
+● Deve haver uma estratégia clara para armazenamento e acesso a W_in, b, β
 
 ---
 
