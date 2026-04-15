@@ -67,7 +67,7 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 
 
 
-## 5. Diagrama de Blocos
+## 4. Diagrama de Blocos
 
 O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_blocos.svg`](hardware/docs/Datapah+FSM.drawio.svg).
 
@@ -75,7 +75,7 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 
 
 
-## 6.Instalação e Configuração do Ambiente
+## 5. Instalação e Configuração do Ambiente
 
 Para a validação e testes do co-processador ELM, foi utilizada a plataforma de desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta arquitetura heterogênea permite a cooperação entre processamento baseado em software (ARM) e hardware reconfigurável (FPGA).Componentes Principais:
 
@@ -120,7 +120,7 @@ git clone https://github.com/JeanDevBAh/elm_accel_project.git
 
 ---
 
-## 7. Uso de Recursos FPGA
+## 6. Uso de Recursos FPGA
 
 > Tabela a ser preenchida após síntese no Quartus Prime.
 
@@ -132,6 +132,50 @@ git clone https://github.com/JeanDevBAh/elm_accel_project.git
 | M10K (BRAM) | 202 | 397 | ~50.8% |
 
 ---
+## 7. Testes e Validação
+
+### Scripts de Apoio
+
+Os scripts utilizados para geração de vetores de teste e validação estão em `hardware/sim/`:
+
+| Script | Descrição |
+|--------|-----------|
+| `converteIMG.py` | Converte imagens PNG 28×28 para arquivos `.hex/.mif` compatíveis com o testbench |
+| `converte.py` | Converte os pesos do modelo (`.txt`) para arquivos `.mif`/`.hex` para inicialização das ROMs |
+| `golden_model.py` | Executa a inferência ELM em Python e retorna a predição esperada |
+
+### Golden Model
+
+O `golden_model.py` serve como referência para validação do RTL. Ele replica 
+exatamente a lógica de ativação implementada no Verilog — incluindo a aproximação 
+PWL (piecewise linear) do sigmoid em ponto fixo Q4.12 — garantindo que qualquer 
+divergência entre o resultado do hardware e o golden model indique um erro de 
+implementação RTL, e não uma diferença de algoritmo.
+
+### Fluxo de Validação
+
+**1. Converter a imagem de teste:**
+```bash
+python3 converteIMG.py
+```
+
+**2. Gerar os arquivos de pesos:**
+```bash
+python3 converte.py
+```
+
+**3. Obter a predição esperada:**
+```bash
+python3 golden_model.py
+```
+
+**4. Executar a simulação RTL:**
+```bash
+iverilog -o sim.out testbench.v elm_accel.v
+vvp sim.out
+```
+
+**5. Comparar** o resultado da simulação com a saída do golden model.
 
 ## 8. Análise dos Resultados
 
