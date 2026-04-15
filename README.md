@@ -31,7 +31,6 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 | Ferramenta | Versão | Uso |
 |------------|--------|-----|
 | Intel Quartus Prime | 21.1 Lite | Síntese e place-and-route |
-| ModelSim-Intel | 2021.1 | Simulação RTL |
 | Python | 3.10+ | Scripts de geração de vetores e golden model |
 | NumPy | 1.24+ | Cálculo do golden model |
 
