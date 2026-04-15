@@ -14,15 +14,15 @@
 Implementar inferência ELM com pesos fornecidos.
 ● A arquitetura deve sequencial
 ● Deve haver:
-○ FSM de controle
-○ datapath MAC (multiplica-acumula)
-○ ativação aproximada (LUT ou piecewise linear)
-○ argmax final
-○ memórias para armazenamento dos dados
-○ banco de registradores
-● Valores devem ser representados em ponto fixo (fix-point) no formato Q4.12.
-● Pesos podem residir em ROM inicializada (MIF/HEX) ou blocos RAM/ROM inferidos
-● Deve haver uma estratégia clara para armazenamento e acesso a W_in, b, β
+-FSM de controle
+- datapath MAC (multiplica-acumula)
+- ativação aproximada (LUT ou piecewise linear)
+- argmax final
+- memórias para armazenamento dos dados
+- banco de registradores
+- Valores devem ser representados em ponto fixo (fix-point) no formato Q4.12.
+- Pesos podem residir em ROM inicializada (MIF/HEX) ou blocos RAM/ROM inferidos
+- Deve haver uma estratégia clara para armazenamento e acesso a W_in, b, β
 
 ---
 
