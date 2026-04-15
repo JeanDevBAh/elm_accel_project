@@ -62,6 +62,24 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 | **0x0C** | `REG_WDATA` | R/W | Porta de dados para alimentação de pesos e pixels. |
 | **0x14** | `REG_CYCLES` | R | Contador de ciclos de clock para métricas de latência. |
 
+
+## 3.1 Conjunto de Instruções (ISA)
+
+O co-processador implementa um conjunto de 8 instruções de 32 bits, controladas
+pelo campo `opcode` de 3 bits presente no registrador `REG_CTRL`. As instruções
+disponíveis são:
+
+| Opcode | Mnemônico | Código | Descrição |
+|--------|-----------|--------|-----------|
+| `3'b000` | `NOP` | 0 | Nenhuma operação. Mantém o estado atual do co-processador. |
+| `3'b001` | `STORE_IMG` | 1 | Armazena um pixel na memória de imagem no endereço especificado por `REG_ADDR`. O dado é um valor de 8 bits (0..255). Bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b010` | `STORE_WEIGHT` | 2 | Armazena um peso W_in na memória de pesos no endereço especificado. O valor é convertido para Q4.12 antes da escrita. Bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b011` | `STORE_BIAS` | 3 | Armazena um valor de bias b na memória de bias no endereço especificado. O valor é convertido para Q4.12 antes da escrita. Bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b100` | `START` | 4 | Inicia o processamento da inferência com os dados atualmente carregados nas memórias. Ativa o sinal `busy` até a conclusão. |
+| `3'b101` | `STATUS` | 5 | Leitura do estado atual do co-processador. Retorna os bits `busy`, `done` e `error`, além do resultado da predição (0..9) codificado em 4 bits no campo `pred` do `REG_STATUS`. |
+| `3'b110` | `STORE_BETA` | 6 | Armazena um peso β na memória de saída no endereço especificado. O valor é convertido para Q4.12 antes da escrita. Bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b111` | `CLEAR` | 7 | Limpa os flags de status (`done`, `error`), preparando o co-processador para uma nova inferência. |
+
 ---
 
 
