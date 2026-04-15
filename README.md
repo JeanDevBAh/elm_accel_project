@@ -44,6 +44,67 @@ Além disso, o enunciado exige para o repositório do Marco 01:
 - Expor contador de ciclos (`cycles`) para medição de desempenho.
 
 ---
+## 2.1 Fundamentação Teórica
+
+### Extreme Learning Machine (ELM)
+
+A Extreme Learning Machine é um algoritmo de aprendizado para redes neurais de
+camada única (Single Layer Feedforward Network — SLFN). Sua principal
+característica é que os pesos da camada oculta (W_in) e os bias (b) são gerados
+aleatoriamente e permanecem fixos durante todo o processo, sem necessidade de
+ajuste iterativo. Apenas os pesos da camada de saída (β) são determinados
+analiticamente, por meio da pseudoinversa de Moore-Penrose. Isso torna o
+treinamento significativamente mais rápido que redes treinadas por
+backpropagation, mantendo capacidade competitiva de generalização.
+
+A inferência na ELM segue quatro estágios sequenciais:
+
+1. **Leitura da entrada:** vetor x com 784 valores (imagem 28×28 pixels em
+escala de cinza, normalizada para [0, 1]).
+2. **Camada oculta:** `h = activation(W_in · x + b)`, onde W_in é uma matriz
+128×784 e b é um vetor de 128 bias. A função de ativação utilizada é a tangente
+hiperbólica (tanh), aproximada em hardware por uma função linear por partes (PWL).
+3. **Camada de saída:** `y = β · h`, onde β é uma matriz 10×128 que projeta os
+128 neurônios ocultos nas 10 classes possíveis.
+4. **Predição:** `pred = argmax(y)`, retornando o índice da classe com maior
+ativação, correspondendo ao dígito reconhecido (0..9).
+
+### Representação em Ponto Fixo Q4.12
+
+Para implementação eficiente em FPGA, todos os valores são representados no
+formato de ponto fixo Q4.12: 1 bit de sinal, 4 bits para a parte inteira e 12
+bits para a parte fracionária, totalizando 16 bits. Nesse formato, o valor real
+de um número é obtido dividindo o inteiro representado por 2¹² (4096).
+
+Operações de multiplicação entre dois valores Q4.12 produzem um resultado em
+Q8.24, sendo necessário um deslocamento aritmético de 12 bits à direita para
+retornar ao formato Q4.12. Esse ajuste é realizado explicitamente no datapath
+MAC do co-processador.
+
+### Arquitetura do Co-processador
+
+O co-processador segue uma arquitetura sequencial controlada por uma FSM
+(Finite State Machine), composta pelos seguintes elementos:
+
+- **FSM de controle:** coordena os estágios de carregamento de dados, computação
+da camada oculta, ativação, computação da camada de saída e argmax.
+- **Datapath MAC:** unidade de multiplicação e acumulação responsável pelos
+produtos escalares W_in·x e β·h.
+- **Ativação PWL:** aproximação linear por partes da função tanh, implementada
+via LUT ou comparadores, evitando o custo de hardware de funções transcendentais.
+- **Argmax:** circuito que percorre os 10 valores de saída e retorna o índice do
+maior valor.
+- **Memórias:** RAMs e ROMs internas para armazenamento da imagem, pesos W_in,
+bias b e pesos β.
+
+### Interface Hardware-Software (MMIO)
+
+A comunicação entre o processador ARM (HPS) e o co-processador na FPGA é
+realizada via Memory-Mapped I/O (MMIO), utilizando a bridge HPS-to-FPGA
+disponível na plataforma DE1-SoC. Nesse modelo, registradores internos do
+co-processador são mapeados em endereços do espaço de memória do ARM, permitindo
+que o software controle o hardware por meio de leituras e escritas em memória
+convencional, sem necessidade de protocolos de comunicação dedicados.
 
 ## 3. Ambiente de Desenvolvimento
 
