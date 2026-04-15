@@ -50,13 +50,17 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 
 > Mapa preliminar para referência. A interface MMIO será implementada no Marco 2.
 
-| Offset | Nome | Acesso | Largura | Descrição |
-|--------|------|--------|---------|-----------|
-| `0x00` | CTRL | W | 32 bits | bit[0]=start |
-| `0x04` | STATUS | R | 32 bits | bit[0]=busy, bit[1]=done, bit[2]=error, bits[6:3]=pred |
-| `0x08` | IMG_ADDR | W | 32 bits | Endereço do pixel (0..783) |
-| `0x0C` | IMG_DATA | W | 32 bits | Valor do pixel (0..255) |
-| `0x10` | CYCLES | R | 32 bits | Ciclos gastos na última inferência |
+## 4. Mapa de Registradores (Preliminar)
+
+A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços para controle pelo processador ARM[cite: 46, 90]:
+
+| Endereço Relativo | Nome | Acesso | Descrição |
+|:---|:---|:---|:---|
+| **0x00** | `REG_CTRL` | R/W | Controle: Opcode, endereço manual e bit START[cite: 118, 122]. |
+| **0x04** | `REG_STATUS` | R | Status: Bits BUSY, DONE, ERROR e resultado da Predição[cite: 123, 127]. |
+| **0x08** | `REG_ADDR` | R/W | Endereço estendido para escrita em memórias internas. |
+| **0x0C** | `REG_WDATA` | R/W | Porta de dados para alimentação de pesos e pixels. |
+| **0x14** | `REG_CYCLES` | R | Contador de ciclos de clock para métricas de latência[cite: 195]. |
 
 ---
 
