@@ -60,26 +60,6 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 
 ---
 
-## 4. Módulos RTL
-
-### `elm_accel.v`
-Módulo top do co-processador. Contém a FSM de controle com 24 estados, os contadores de iteração, os acumuladores Q4.12 e as instâncias de todas as RAMs e submódulos.
-
-### `mac_q412.v`
-Multiplicador de dois operandos Q4.12 de 16 bits. Produz resultado de 32 bits com ajuste de escala via shift aritmético de 12 bits, corrigindo a escala dupla gerada pela multiplicação.
-
-### `sigmoid_pwl.v`
-Aproximação linear por partes (PWL) da função sigmoide com 5 segmentos:
-
-| Intervalo | Saída (real) |
-|-----------|--------------|
-| x ≤ −4 | 0 |
-| −4 < x < −2 | 0.0625 × (x + 4) |
-| −2 ≤ x < 2 | 0.5 + 0.125 × x |
-| 2 ≤ x < 4 | 0.75 + 0.0625 × (x − 2) |
-| x ≥ 4 | 1 |
-
----
 
 ## 5. Instalação e Configuração do Ambiente
 
@@ -95,57 +75,12 @@ cd elm-fpga-classifier/marco1
 ```bash
 pip install numpy pillow
 ```
-
-### 5.3 Simulação com ModelSim
-
-```bash
-cd marco1/scripts
-./run_sim.sh
-```
-
-O script compila todos os arquivos RTL e o testbench, executa a simulação e compara as saídas com o golden model Python.
-
 ### 5.4 Síntese com Quartus
 
 Abrir o projeto em `marco1/quartus/elm_accel.qpf` no Quartus Prime e executar compilação completa (Processing → Start Compilation).
 
 ---
 
-## 6. Testes de Funcionamento
-
-### 6.1 Estrutura dos testes
-
-```
-marco1/
-├── tb/
-│   └── tb_elm_accel.v       # Testbench principal
-├── scripts/
-│   ├── run_sim.sh            # Executa simulação completa
-│   ├── gen_vectors.py        # Gera vetores de teste a partir de imagens MNIST
-│   └── golden_model.py       # Referência Python para comparação
-└── sim/
-    ├── vectors/              # Vetores de entrada gerados
-    └── results/              # Saídas da simulação
-```
-
-### 6.2 Como executar
-
-```bash
-# Gerar vetores de teste
-python3 scripts/gen_vectors.py --dataset mnist_test/ --n 10 --out sim/vectors/
-
-# Executar simulação
-./scripts/run_sim.sh
-
-# Comparar com golden model
-python3 scripts/golden_model.py --vectors sim/vectors/ --results sim/results/
-```
-
-### 6.3 Critério de aprovação
-
-A simulação é considerada aprovada quando `pred` do RTL coincide com `pred` do golden model Python para todos os vetores de teste fornecidos.
-
----
 
 ## 7. Uso de Recursos FPGA
 
