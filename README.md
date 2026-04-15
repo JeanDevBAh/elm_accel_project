@@ -76,6 +76,12 @@ Para a validação e testes do co-processador ELM, foi utilizada a plataforma de
 -HPS (Hard Processor System): Processador ARM Cortex-A9 Dual-Core.
 -Interface de Programação: USB-Blaster integrada para configuração via JTAG.
 
+## 5. Diagrama de Blocos
+
+O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_blocos.svg`](docs/Datapah+FSM.drawio.svg).
+
+![Diagrama de Blocos](docs/Datapah+FSM.drawio.svg)
+
 Periféricos de Interface Utilizados: 
 ###
 -Switches (SW[0-9]): Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
