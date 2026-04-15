@@ -56,11 +56,11 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 
 | Endereço Relativo | Nome | Acesso | Descrição |
 |:---|:---|:---|:---|
-| **0x00** | `REG_CTRL` | R/W | Controle: Opcode, endereço manual e bit START[cite: 118, 122]. |
-| **0x04** | `REG_STATUS` | R | Status: Bits BUSY, DONE, ERROR e resultado da Predição[cite: 123, 127]. |
+| **0x00** | `REG_CTRL` | R/W | Controle: Opcode, endereço manual e bit START. |
+| **0x04** | `REG_STATUS` | R | Status: Bits BUSY, DONE, ERROR e resultado da Predição. |
 | **0x08** | `REG_ADDR` | R/W | Endereço estendido para escrita em memórias internas. |
 | **0x0C** | `REG_WDATA` | R/W | Porta de dados para alimentação de pesos e pixels. |
-| **0x14** | `REG_CYCLES` | R | Contador de ciclos de clock para métricas de latência[cite: 195]. |
+| **0x14** | `REG_CYCLES` | R | Contador de ciclos de clock para métricas de latência. |
 
 ---
 
