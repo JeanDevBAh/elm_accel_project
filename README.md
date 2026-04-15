@@ -82,25 +82,39 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 
 ![Diagrama de Blocos](hardware/docs/Datapah+FSM.drawio.svg)
 
-Periféricos de Interface Utilizados: 
-###
--Switches (SW[0-9]): Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
--Push-buttons (KEY[0-1]): Mapeados para as funções de Reset do sistema e pulso de execução de instruções.
--Displays de 7 Segmentos (HEX0-5): Utilizados para monitoramento em tempo real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos de performance.
+### Periféricos de Interface Utilizados
 
-Instalação e Configuração do Ambiente: O processo de configuração do ambiente é dividido entre as ferramentas de síntese de hardware e as ferramentas de validação por software.
+- **Switches (SW[0-9]):** Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
+- **Push-buttons (KEY[0-1]):** Mapeados para as funções de Reset do sistema e pulso de execução de instruções.
+- **Displays de 7 Segmentos (HEX0-5):** Utilizados para monitoramento em tempo real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos de performance.
 
-Requisitos de Software:
-###
--Intel Quartus Prime Lite Edition (v21.1 ou superior): Necessário para síntese, place-and-route e geração do arquivo de programação (.sof) para a FPGA.
--Ambiente para execução do Golden Model e geração de vetores de teste (.mif/.hex).Dependências: pip install numpy.3.2 e pip install Pillow.
+---
 
-Procedimento de Configuração
-###
--Clonagem do Repositório: https://github.com/JeanDevBAh/elm_accel_project.git
+## 6.Instalação e Configuração do Ambiente
 
--Programação:Abra o projeto .qpf no Quartus Prime.Execute a compilação completa para gerar o relatório de uso de recursos. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o co-processador na FPGA
+O processo de configuração do ambiente é dividido entre as ferramentas de síntese de hardware e as ferramentas de validação por software.
 
+### Requisitos de Software
+
+- **Intel Quartus Prime Lite Edition (v21.1 ou superior):** Necessário para síntese, place-and-route e geração do arquivo de programação (`.sof`) para a FPGA.
+- **Golden Model e geração de vetores de teste (`.mif`/`.hex`):** Instale as dependências com:
+
+```bash
+pip install numpy
+pip install Pillow
+```
+
+### Procedimento de Configuração
+
+**1. Clonagem do Repositório:**
+```bash
+git clone https://github.com/JeanDevBAh/elm_accel_project.git
+```
+
+**2. Programação da FPGA:**
+1. Abra o projeto `.qpf` no Quartus Prime.
+2. Execute a compilação completa para gerar o relatório de uso de recursos.
+3. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o co-processador na FPGA.
 
 ## 7. Uso de Recursos FPGA
 
