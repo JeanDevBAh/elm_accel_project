@@ -65,16 +65,7 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 ---
 
 
-## 4. Instalação e Configuração do Ambiente
 
-Para a validação e testes do co-processador ELM, foi utilizada a plataforma de desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta arquitetura heterogênea permite a cooperação entre processamento baseado em software (ARM) e hardware reconfigurável (FPGA).Componentes Principais:
-###
--FPGA: Cyclone V 5CSEMA5F31C6.
--Lógica: 32.070 ALMs (Adaptive Logic Modules).
--Memória: 3.971 Kbits de memória embarcada (M10K).
--DSP: 87 blocos de hardware para processamento digital de sinais.
--HPS (Hard Processor System): Processador ARM Cortex-A9 Dual-Core.
--Interface de Programação: USB-Blaster integrada para configuração via JTAG.
 
 ## 5. Diagrama de Blocos
 
@@ -91,6 +82,17 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 ---
 
 ## 6.Instalação e Configuração do Ambiente
+
+Para a validação e testes do co-processador ELM, foi utilizada a plataforma de desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta arquitetura heterogênea permite a cooperação entre processamento baseado em software (ARM) e hardware reconfigurável (FPGA).Componentes Principais:
+
+###
+
+-FPGA: Cyclone V 5CSEMA5F31C6.
+-Lógica: 32.070 ALMs (Adaptive Logic Modules).
+-Memória: 3.971 Kbits de memória embarcada (M10K).
+-DSP: 87 blocos de hardware para processamento digital de sinais.
+-HPS (Hard Processor System): Processador ARM Cortex-A9 Dual-Core.
+-Interface de Programação: USB-Blaster integrada para configuração via JTAG.
 
 O processo de configuração do ambiente é dividido entre as ferramentas de síntese de hardware e as ferramentas de validação por software.
 
