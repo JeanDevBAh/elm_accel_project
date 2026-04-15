@@ -44,55 +44,7 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 
 ---
 
-## 3. Arquitetura do Co-processador
 
-### Diagrama de Blocos
-
-```
-                         ┌─────────────────────────────────────────┐
-                         │              elm_accel                   │
-                         │                                          │
-  img_we ──────────────► │  ┌──────────┐    ┌───────────────────┐  │
-  img_addr ─────────────►│  │ img_ram  │    │   FSM de controle │  │
-  img_wdata ────────────►│  │ (784x8b) │    │   (24 estados)    │  │
-                         │  └────┬─────┘    └────────┬──────────┘  │
-                         │       │                   │             │
-                         │  ┌────▼─────┐    ┌────────▼──────────┐  │
-  start ────────────────►│  │w_in_ram  │    │     mac_q412      │  │
-                         │  │(100352x16│    │  (multiplicador   │  │
-  busy ◄─────────────────│  │   bits)  │    │   Q4.12)          │  │
-  done ◄─────────────────│  └──────────┘    └────────┬──────────┘  │
-  error ◄────────────────│                           │             │
-  pred[3:0] ◄────────────│  ┌──────────┐    ┌────────▼──────────┐  │
-  cycles[31:0] ◄─────────│  │  b_ram   │    │  sigmoid_pwl      │  │
-                         │  │ (128x16b)│    │  (ativação PWL)   │  │
-                         │  └──────────┘    └───────────────────┘  │
-                         │                                          │
-                         │  ┌──────────┐    ┌───────────────────┐  │
-                         │  │ beta_ram │    │  argmax (lógica   │  │
-                         │  │(1280x16b)│    │  sequencial)      │  │
-                         │  └──────────┘    └───────────────────┘  │
-                         └─────────────────────────────────────────┘
-```
-
-### Fluxo da FSM
-
-```
-IDLE → LOAD_BIAS_REQ → (W1→W4) → HID_REQ → (W1→W4) → HID_ACC
-  ↑                                                        │
-  │                                              (loop 784 pixels)
-  │                                                        ▼
-  │                                               ACTIVATION
-  │                                          (loop 128 neurônios)
-  │                                                        ▼
-  │                                    OUT_INIT → BETA_REQ → (W1→W4)
-  │                                                        │
-  │                                              (loop 128 × 10)
-  │                                                        ▼
-  │                                    ARGMAX_INIT → ARGMAX_STEP
-  │                                                        │
-  └──────────────────────────── DONE ◄────────────────────┘
-```
 
 ### Mapa de Registradores (MMIO — Marco 2)
 
@@ -201,10 +153,10 @@ A simulação é considerada aprovada quando `pred` do RTL coincide com `pred` d
 
 | Recurso | Utilizado | Disponível (Cyclone V) | % |
 |---------|-----------|------------------------|---|
-| LUTs | — | 32.070 | — |
-| Flip-Flops | — | 64.140 | — |
-| DSP Blocks | — | 87 | — |
-| M10K (BRAM) | — | 397 | — |
+| LUTs | 1451 | 32.070 | ~4,5% |
+| Flip-Flops | 2576 | 64.140 | ~4.0% |
+| DSP Blocks | 2 | 87 | ~2.3% |
+| M10K (BRAM) | 202 | 397 | ~50.8% |
 
 ---
 
