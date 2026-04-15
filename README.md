@@ -63,46 +63,51 @@ Além disso, o enunciado exige para o repositório do Marco 01:
 | DE1-SoC | Placa com Cyclone V (5CSEMA5F31C6) + ARM Cortex-A9 |
 | USB-Blaster | Programação da FPGA via JTAG |
 
+
 ---
 
 
+## Mapa Preliminar de Registradores para futura interface MMIO (Marco 02)
 
-### Mapa de Registradores (MMIO — Marco 2)
-
-> Mapa preliminar para referência. A interface MMIO será implementada no Marco 2.
+> Mapa preliminar para referência. A interface MMIO ainda **não está implementada** no Marco 01.
+> Nesta etapa, o co-processador é controlado por uma interface compacta de bancada com switches e botões.
+> No Marco 02, essa lógica será associada ao acesso via MMIO entre HPS e FPGA.
 
 ## 4. Mapa de Registradores (Preliminar)
 
-A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços para controle pelo processador ARM:
+A comunicação futura via MMIO (Memory-Mapped I/O) poderá utilizar os seguintes registradores para controle pelo processador ARM:
 
-| Endereço Relativo | Nome | Acesso | Descrição |
-|:---|:---|:---|:---|
-| **0x00** | `REG_CTRL` | R/W | Controle: Opcode, endereço manual e bit START. |
-| **0x04** | `REG_STATUS` | R | Status: Bits BUSY, DONE, ERROR e resultado da Predição. |
-| **0x08** | `REG_ADDR` | R/W | Endereço estendido para escrita em memórias internas. |
-| **0x0C** | `REG_WDATA` | R/W | Porta de dados para alimentação de pesos e pixels. |
-| **0x14** | `REG_CYCLES` | R | Contador de ciclos de clock para métricas de latência. |
-
-
-## 4.1 Conjunto de Instruções (ISA)
-
-O co-processador implementa um conjunto de 8 instruções de 32 bits, controladas
-pelo campo `opcode` de 3 bits presente no registrador `REG_CTRL`. As instruções
-disponíveis são:
-
-| Opcode | Mnemônico | Código | Descrição |
-|--------|-----------|--------|-----------|
-| `3'b000` | `NOP` | 0 | Nenhuma operação. Mantém o estado atual do co-processador. |
-| `3'b001` | `STORE_IMG` | 1 | Armazena um pixel na memória de imagem no endereço especificado por `REG_ADDR`. O dado é um valor de 8 bits (0..255). Bloqueada se `busy` ou `protect_inference` estiver ativo. |
-| `3'b010` | `STORE_WEIGHT` | 2 | Armazena um peso W_in na memória de pesos no endereço especificado. O valor é convertido para Q4.12 antes da escrita. Bloqueada se `busy` ou `protect_inference` estiver ativo. |
-| `3'b011` | `STORE_BIAS` | 3 | Armazena um valor de bias b na memória de bias no endereço especificado. O valor é convertido para Q4.12 antes da escrita. Bloqueada se `busy` ou `protect_inference` estiver ativo. |
-| `3'b100` | `START` | 4 | Inicia o processamento da inferência com os dados atualmente carregados nas memórias. Ativa o sinal `busy` até a conclusão. |
-| `3'b101` | `STATUS` | 5 | Leitura do estado atual do co-processador. Retorna os bits `busy`, `done` e `error`, além do resultado da predição (0..9) codificado em 4 bits no campo `pred` do `REG_STATUS`. |
-| `3'b110` | `STORE_BETA` | 6 | Armazena um peso β na memória de saída no endereço especificado. O valor é convertido para Q4.12 antes da escrita. Bloqueada se `busy` ou `protect_inference` estiver ativo. |
-| `3'b111` | `CLEAR` | 7 | Limpa os flags de status (`done`, `error`), preparando o co-processador para uma nova inferência. |
+| Endereço Relativo | Nome         | Acesso | Descrição |
+|:--:|:-------------|:-----:|:----------|
+| `0x00` | `REG_CTRL`   | R/W | Registrador de controle da operação. No Marco 02, deverá concentrar os comandos de controle, como seleção da operação e disparo da execução. |
+| `0x04` | `REG_STATUS` | R   | Status do coprocessador: bits de `BUSY`, `DONE`, `ERROR` e campo da predição atual. |
+| `0x08` | `REG_ADDR`   | R/W | Endereço para acesso às memórias internas. Será usado para apontar posições de imagem, pesos, bias ou beta. |
+| `0x0C` | `REG_WDATA`  | R/W | Dado de escrita para alimentação das memórias internas. |
+| `0x10` | `REG_RESULT` | R   | Resultado final da inferência, correspondente à predição `pred`. |
+| `0x14` | `REG_CYCLES` | R   | Contador de ciclos de clock da inferência, usado para métricas de latência. |
+| `0x18` | `REG_DEBUG`  | R   | Registrador auxiliar de depuração para observação interna do hardware. |
 
 ---
 
+## 4.1 Conjunto de Instruções (ISA)
+
+O co-processador implementa **operações controladas por um opcode de 3 bits**.  
+No **Marco 01**, essas operações são demonstradas por meio de uma **interface compacta de bancada com switches**.  
+No **Marco 02**, elas serão associadas a uma interface **MMIO com banco de registradores**.
+
+| Opcode | Mnemônico      | Código | Descrição |
+|:------:|:---------------|:------:|:----------|
+| `3'b000` | `NOP`          | 0 | Nenhuma operação. Mantém o estado atual do co-processador. |
+| `3'b001` | `STORE_IMG`    | 1 | Armazena um pixel na memória de imagem no endereço especificado. **Na interface atual de bancada**, o dado manual é limitado a **3 bits (0 a 7)** e expandido internamente para 8 bits. A operação é bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b010` | `STORE_WEIGHT` | 2 | Armazena um peso `W_in` na memória de pesos no endereço especificado. **Na interface atual de bancada**, o dado manual de 3 bits é convertido por tabela para um valor reduzido em **Q4.12** antes da escrita. A operação é bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b011` | `STORE_BIAS`   | 3 | Armazena um valor de bias `b` na memória de bias no endereço especificado. **Na interface atual de bancada**, o dado manual de 3 bits é convertido por tabela para **Q4.12** antes da escrita. A operação é bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b100` | `START`        | 4 | Inicia o processamento da inferência com os dados atualmente carregados nas memórias. Ativa o sinal `busy` até a conclusão. |
+| `3'b101` | `STATUS`       | 5 | Leitura do estado atual do co-processador. Retorna os bits `busy`, `done` e `error`, além do resultado da predição `(0..9)` codificado em 4 bits no campo `pred` do status. |
+| `3'b110` | `STORE_BETA`   | 6 | Armazena um peso `β` na memória de saída no endereço especificado. **Na interface atual de bancada**, o dado manual de 3 bits é convertido por tabela para **Q4.12** antes da escrita. A operação é bloqueada se `busy` ou `protect_inference` estiver ativo. |
+| `3'b111` | `RESERVADO`    | 7 | Opcode reservado para extensões futuras da interface. Na implementação atual, não é utilizado como instrução válida da ISA. |
+
+
+---
 
 
 
