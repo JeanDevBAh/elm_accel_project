@@ -50,7 +50,7 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 
 > Mapa preliminar para referência. A interface MMIO será implementada no Marco 2.
 
-## 4. Mapa de Registradores (Preliminar)
+## 3. Mapa de Registradores (Preliminar)
 
 A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços para controle pelo processador ARM[cite: 46, 90]:
 
@@ -65,7 +65,7 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 ---
 
 
-## 5. Instalação e Configuração do Ambiente
+## 4. Instalação e Configuração do Ambiente
 
 Para a validação e testes do co-processador ELM, foi utilizada a plataforma de desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta arquitetura heterogênea permite a cooperação entre processamento baseado em software (ARM) e hardware reconfigurável (FPGA).Componentes Principais:
 ###
@@ -92,6 +92,7 @@ Requisitos de Software:
 Procedimento de Configuração
 ###
 -Clonagem do Repositório: https://github.com/JeanDevBAh/elm_accel_project.git
+
 -Programação:Abra o projeto .qpf no Quartus Prime.Execute a compilação completa para gerar o relatório de uso de recursos. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o co-processador na FPGA
 
 
