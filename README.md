@@ -67,23 +67,29 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 
 ## 5. Instalação e Configuração do Ambiente
 
-### 5.1 Clonar o repositório
+Para a validação e testes do co-processador ELM, foi utilizada a plataforma de desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta arquitetura heterogênea permite a cooperação entre processamento baseado em software (ARM) e hardware reconfigurável (FPGA).Componentes Principais:
+-FPGA: Cyclone V 5CSEMA5F31C6.
+-Lógica: 32.070 ALMs (Adaptive Logic Modules).
+-Memória: 3.971 Kbits de memória embarcada (M10K).
+-DSP: 87 blocos de hardware para processamento digital de sinais.
+-HPS (Hard Processor System): Processador ARM Cortex-A9 Dual-Core.
+-Interface de Programação: USB-Blaster integrada para configuração via JTAG.
 
-```bash
-git clone https://github.com/<usuario>/elm-fpga-classifier.git
-cd elm-fpga-classifier/marco1
-```
+Periféricos de Interface Utilizados: 
+-Switches (SW[0-9]): Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
+-Push-buttons (KEY[0-1]): Mapeados para as funções de Reset do sistema e pulso de execução de instruções.
+-Displays de 7 Segmentos (HEX0-5): Utilizados para monitoramento em tempo real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos de performance.
 
-### 5.2 Instalar dependências Python (golden model e geração de vetores)
+Instalação e Configuração do Ambiente: O processo de configuração do ambiente é dividido entre as ferramentas de síntese de hardware e as ferramentas de validação por software.
 
-```bash
-pip install numpy pillow
-```
-### 5.4 Síntese com Quartus
+Requisitos de Software:
+-Intel Quartus Prime Lite Edition (v21.1 ou superior): Necessário para síntese, place-and-route e geração do arquivo de programação (.sof) para a FPGA.
+-Ambiente para execução do Golden Model e geração de vetores de teste (.mif/.hex).Dependências: pip install numpy.3.2 e pip install Pillow.
 
-Abrir o projeto em `marco1/quartus/elm_accel.qpf` no Quartus Prime e executar compilação completa (Processing → Start Compilation).
+Procedimento de Configuração
+-Clonagem do Repositório: https://github.com/JeanDevBAh/elm_accel_project.git
 
----
+-Programação:Abra o projeto .qpf no Quartus Prime.Execute a compilação completa para gerar o relatório de uso de recursos. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o co-processador na FPGA
 
 
 ## 7. Uso de Recursos FPGA
