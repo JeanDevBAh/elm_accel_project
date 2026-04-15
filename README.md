@@ -29,10 +29,10 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 ### Software
 | Ferramenta | Versão | Uso |
 |:---|:---|:---|
-| **Intel Quartus Prime** | 21.1 Lite | [cite_start]Síntese, place-and-route e análise de recursos[cite: 10]. |
-| **Icarus Verilog** | 12.0+ | [cite_start]Compilação e simulação funcional do código RTL[cite: 197]. |
+| **Intel Quartus Prime** | 21.1 Lite | Síntese, place-and-route e análise de recursos. |
+| **Icarus Verilog** | 12.0+ | Compilação e simulação funcional do código RTL. |
 | **GTKWave** | 3.3+ | Visualização de formas de onda para depuração de sinais. |
-| **Python** | 3.10+ | [cite_start]Geração de arquivos MIF/HEX e execução do Golden Model[cite: 107]. |
+| **Python** | 3.10+ | Geração de arquivos MIF/HEX e execução do Golden Model. |
 | **NumPy** | 1.24+ | Validação matemática dos resultados de inferência. |
 
 ### Hardware
