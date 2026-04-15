@@ -10,7 +10,7 @@
 - Sinalizar `busy`, `done` e `error` ao controlador externo
 - Expor contador de ciclos (`cycles`) para medição de desempenho
 
-### Estrurtura
+### Estrutura
 Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial. Deve haver:
 -FSM de controle
 - datapath MAC (multiplica-acumula)
