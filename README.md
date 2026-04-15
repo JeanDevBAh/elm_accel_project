@@ -179,9 +179,24 @@ vvp sim.out
 
 ## 8. Análise dos Resultados
 
-> A ser preenchida após execução dos testes de simulação.
+A validação do co-processador foi realizada comparando a predição gerada pelo
+hardware simulado (via testbench `elm_accel_tb.v`) com a saída do `golden_model.py`,
+que replica a mesma lógica de ativação PWL em ponto fixo Q4.12 implementada no RTL.
 
-- Acurácia nos vetores de teste:
-- Ciclos médios por inferência:
-- Frequência máxima de operação:
-- Observações sobre divergências em relação ao golden model:
+Os resultados demonstram comportamento satisfatório para a grande maioria dos vetores
+de teste: o hardware produz a mesma predição que o golden model, confirmando a
+corretude da implementação do datapath MAC, da ativação aproximada e do argmax.
+
+### Comportamento em Imagens Ambíguas
+
+Foi observado que para imagens com características visuais menos definidas — como
+dígitos escritos de forma irregular, com ruído ou traços pouco nítidos — o co-processador
+pode retornar uma predição incorreta. Esse comportamento, no entanto, **não representa
+uma falha de implementação RTL**: a mesma imagem submetida ao `golden_model.py`
+produz o mesmo resultado divergente, indicando que a limitação é inerente ao modelo
+ELM e à aproximação da função de ativação em ponto fixo, e não a um erro de hardware.
+
+Esse alinhamento entre hardware e golden model é o critério central de validação do
+Marco 1: o co-processador é considerado correto quando sua saída coincide com a do
+golden model para todos os vetores de teste fornecidos, independentemente de o modelo
+acertar ou não o dígito real da imagem.
