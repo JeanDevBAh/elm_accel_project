@@ -12,7 +12,7 @@
 
 ### Estrutura
 Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial. Deve haver:
--FSM de controle
+- FSM de controle
 - datapath MAC (multiplica-acumula)
 - ativação aproximada (LUT ou piecewise linear)
 - argmax final
@@ -52,7 +52,7 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 
 ## 3. Mapa de Registradores (Preliminar)
 
-A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços para controle pelo processador ARM[cite: 46, 90]:
+A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços para controle pelo processador ARM:
 
 | Endereço Relativo | Nome | Acesso | Descrição |
 |:---|:---|:---|:---|
@@ -77,30 +77,52 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 
 ## 5. Instalação e Configuração do Ambiente
 
-Para a validação e testes do co-processador ELM, foi utilizada a plataforma de desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta arquitetura heterogênea permite a cooperação entre processamento baseado em software (ARM) e hardware reconfigurável (FPGA).Componentes Principais:
+### Especificação do Hardware
 
-###
+Para a validação e testes do co-processador ELM, foi utilizada a plataforma de
+desenvolvimento DE1-SoC, que integra um sistema SoC Altera Cyclone V. Esta
+arquitetura heterogênea permite a cooperação entre processamento baseado em
+software (ARM) e hardware reconfigurável (FPGA).
 
--FPGA: Cyclone V 5CSEMA5F31C6.
--Lógica: 32.070 ALMs (Adaptive Logic Modules).
--Memória: 3.971 Kbits de memória embarcada (M10K).
--DSP: 87 blocos de hardware para processamento digital de sinais.
--HPS (Hard Processor System): Processador ARM Cortex-A9 Dual-Core.
--Interface de Programação: USB-Blaster integrada para configuração via JTAG.
+**Componentes Principais:**
 
-O processo de configuração do ambiente é dividido entre as ferramentas de síntese de hardware e as ferramentas de validação por software.
+- **FPGA:** Cyclone V 5CSEMA5F31C6
+- **Lógica:** 32.070 ALMs (Adaptive Logic Modules)
+- **Memória:** 3.971 Kbits de memória embarcada (M10K)
+- **DSP:** 87 blocos de hardware para processamento digital de sinais
+- **HPS:** Processador ARM Cortex-A9 Dual-Core
+- **Interface de Programação:** USB-Blaster integrada para configuração via JTAG
 
-### Requisitos de Software
+**Periféricos de Interface Utilizados:**
 
-- **Intel Quartus Prime Lite Edition (v21.1 ou superior):** Necessário para síntese, place-and-route e geração do arquivo de programação (`.sof`) para a FPGA.
-- **Golden Model e geração de vetores de teste (`.mif`/`.hex`):** Instale as dependências com:
+- **Switches (SW[0-9]):** Utilizados para entrada manual de dados, opcodes e
+ativação da proteção de escrita de memória.
+- **Push-buttons (KEY[0-1]):** Mapeados para as funções de Reset do sistema e
+pulso de execução de instruções.
+- **Displays de 7 Segmentos (HEX0-5):** Utilizados para monitoramento em tempo
+real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos
+de performance.
+
+---
+
+### Configuração do Ambiente de Desenvolvimento
+
+O processo de configuração do ambiente é dividido entre as ferramentas de síntese
+de hardware e as ferramentas de validação por software.
+
+**Requisitos de Software:**
+
+- **Intel Quartus Prime Lite Edition (v21.1 ou superior):** Necessário para
+síntese, place-and-route e geração do arquivo de programação (`.sof`) para a FPGA.
+- **Golden Model e geração de vetores de teste (`.mif`/`.hex`):** Instale as
+dependências com:
 
 ```bash
 pip install numpy
 pip install Pillow
 ```
 
-### Procedimento de Configuração
+**Procedimento de Configuração:**
 
 **1. Clonagem do Repositório:**
 ```bash
@@ -110,15 +132,8 @@ git clone https://github.com/JeanDevBAh/elm_accel_project.git
 **2. Programação da FPGA:**
 1. Abra o projeto `.qpf` no Quartus Prime.
 2. Execute a compilação completa para gerar o relatório de uso de recursos.
-3. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o co-processador na FPGA.
-
-### Periféricos de Interface Utilizados
-
-- **Switches (SW[0-9]):** Utilizados para entrada manual de dados, opcodes e ativação da proteção de escrita de memória.
-- **Push-buttons (KEY[0-1]):** Mapeados para as funções de Reset do sistema e pulso de execução de instruções.
-- **Displays de 7 Segmentos (HEX0-5):** Utilizados para monitoramento em tempo real da predição (argmax), estado da FSM (Busy/Done/Error) e contagem de ciclos de performance.
-
----
+3. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o
+co-processador na FPGA.
 
 ## 6. Uso de Recursos FPGA
 
@@ -200,3 +215,11 @@ Esse alinhamento entre hardware e golden model é o critério central de valida�
 Marco 1: o co-processador é considerado correto quando sua saída coincide com a do
 golden model para todos os vetores de teste fornecidos, independentemente de o modelo
 acertar ou não o dígito real da imagem.
+
+### Métricas
+
+| Métrica | Valor |
+|---|---|
+| Acurácia nos vetores de teste | A preencher |
+| Ciclos médios por inferência | A preencher |
+| Frequência máxima de operação | A preencher |
