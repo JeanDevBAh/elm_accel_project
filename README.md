@@ -1,30 +1,51 @@
 # Marco 1 — Co-processador ELM em FPGA
 
-## 1. Levantamento de Requisitos
+Disciplina: TEC 499 — MI Sistemas Digitais
+
+Instituição: Universidade Estadual de Feira de Santana (UEFS)
+
+Integrantes: Thiago Reis, Tairone Lima, Jean Carlos
+
+Tutor: Wild Freitas
+
+## 1. Definição do Problema
+
+Este projeto implementa, em FPGA, um co-processador para inferência de uma rede neural baseada em Extreme Learning Machine (ELM). O sistema completo do problema é dividido em três partes: um núcleo classificador em FPGA, um driver Linux em ARM com acesso por MMIO e uma aplicação em C. Neste Marco 01, o foco é a construção e validação do IP de inferência em RTL, incluindo simulação e demonstração do funcionamento na placa DE1-SoC. A inferência da ELM foi tratada como uma sequência de quatro etapas: leitura da imagem de entrada, processamento da camada oculta, processamento da camada de saída e cálculo da predição por argmax. O problema especifica que a entrada é uma imagem em escala de cinza de 28×28 pixels, com 784 bytes, e que a saída é um dígito inteiro no intervalo [0,9].
+
+## 2. Levantamento de Requisitos
+
+O Marco 01 exige um coprocessador ELM em Verilog com arquitetura sequencial, contendo:
+
+- FSM de controle.
+- Datapath MAC (multiplica-acumula).
+- Ativação aproximada (LUT ou piecewise linear).
+- Argmax final. 
+- Memórias para armazenamento dos dados.
+- Banco de registradores.
+- Representação em ponto fixo `Q4.12`.
+- Estratégia clara para armazenamento e acesso a `W_in, b e β`.
+
+Além disso, o enunciado exige para o repositório do Marco 01:
+
+- RTL Verilog do IP `elm_accel`.
+- Testbench com vetores de teste comparando com golden model.
+- Diagrama de blocos do datapath e da FSM.
+- Uso de recursos FPGA.
+- Mapa preliminar de registradores.
+- Scripts para automação dos testes.
+- READ.ME com detalhamento da solução, ambiente, testes e análise dos resultados.
 
 ### E/S
-- Receber imagem 28×28 pixels (784 bytes, 8 bits/pixel, escala de cinza)
-- Calcular camada oculta: `h = sigmoid(W_in · x + b)`, com 128 neurônios
-- Calcular camada de saída: `y = β · h`, com 10 classes
-- Retornar a predição via `pred = argmax(y)` → inteiro 0..9
-- Sinalizar `busy`, `done` e `error` ao controlador externo
-- Expor contador de ciclos (`cycles`) para medição de desempenho
-
-### Estrutura
-Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial. Deve haver:
-- FSM de controle
-- datapath MAC (multiplica-acumula)
-- ativação aproximada (LUT ou piecewise linear)
-- argmax final
-- memórias para armazenamento dos dados
-- banco de registradores
-- Valores devem ser representados em ponto fixo (fix-point) no formato Q4.12.
-- Pesos podem residir em ROM inicializada (MIF/HEX) ou blocos RAM/ROM inferidos
-- Deve haver uma estratégia clara para armazenamento e acesso a W_in, b, β
+- Receber imagem 28×28 pixels (784 bytes, 8 bits/pixel, escala de cinza).
+- Calcular camada oculta: `h = sigmoid(W_in · x + b)`, com 128 neurônios.
+- Calcular camada de saída: `y = β · h`, com 10 classes.
+- Retornar a predição via `pred = argmax(y)` → inteiro 0..9.
+- Sinalizar `busy`, `done` e `error` ao controlador externo.
+- Expor contador de ciclos (`cycles`) para medição de desempenho.
 
 ---
 
-## 2. Ambiente de Desenvolvimento
+## 3. Ambiente de Desenvolvimento
 
 ### Software
 | Ferramenta | Versão | Uso |
@@ -50,7 +71,7 @@ Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial.
 
 > Mapa preliminar para referência. A interface MMIO será implementada no Marco 2.
 
-## 3. Mapa de Registradores (Preliminar)
+## 4. Mapa de Registradores (Preliminar)
 
 A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços para controle pelo processador ARM:
 
@@ -63,7 +84,7 @@ A comunicação via MMIO (Memory-Mapped I/O) utiliza os seguintes endereços par
 | **0x14** | `REG_CYCLES` | R | Contador de ciclos de clock para métricas de latência. |
 
 
-## 3.1 Conjunto de Instruções (ISA)
+## 4.1 Conjunto de Instruções (ISA)
 
 O co-processador implementa um conjunto de 8 instruções de 32 bits, controladas
 pelo campo `opcode` de 3 bits presente no registrador `REG_CTRL`. As instruções
@@ -85,7 +106,7 @@ disponíveis são:
 
 
 
-## 4. Diagrama de Blocos
+## 5. Diagrama de Blocos
 
 O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_blocos.svg`](hardware/docs/Datapah+FSM.drawio.svg).
 
@@ -93,7 +114,7 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 
 
 
-## 5. Instalação e Configuração do Ambiente
+## 6. Instalação e Configuração do Ambiente
 
 ### Especificação do Hardware
 
@@ -153,7 +174,7 @@ git clone https://github.com/JeanDevBAh/elm_accel_project.git
 3. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o
 co-processador na FPGA.
 
-## 6. Uso de Recursos FPGA
+## 7. Uso de Recursos FPGA
 
 > Tabela a ser preenchida após síntese no Quartus Prime.
 
@@ -165,7 +186,7 @@ co-processador na FPGA.
 | M10K (BRAM) | 202 | 397 | ~50.8% |
 
 ---
-## 7. Testes e Validação
+## 8. Testes e Validação
 
 ### Scripts de Apoio
 
@@ -210,7 +231,7 @@ vvp sim.out
 
 **5. Comparar** o resultado da simulação com a saída do golden model.
 
-## 8. Análise dos Resultados
+## 9. Análise dos Resultados
 
 A validação do co-processador foi realizada comparando a predição gerada pelo
 hardware simulado (via testbench `elm_accel_tb.v`) com a saída do `golden_model.py`,
