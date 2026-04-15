@@ -11,9 +11,7 @@
 - Expor contador de ciclos (`cycles`) para medição de desempenho
 
 ### Estrurtura
-Implementar inferência ELM com pesos fornecidos.
-● A arquitetura deve sequencial
-● Deve haver:
+Implementar inferência ELM com pesos fornecidos, a arquitetura deve sequencial. Deve haver:
 -FSM de controle
 - datapath MAC (multiplica-acumula)
 - ativação aproximada (LUT ou piecewise linear)
