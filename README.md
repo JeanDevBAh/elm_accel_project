@@ -89,7 +89,7 @@ O co-processador segue uma arquitetura sequencial controlada por uma FSM
 da camada oculta, ativação, computação da camada de saída e argmax.
 - **Datapath MAC:** unidade de multiplicação e acumulação responsável pelos
 produtos escalares W_in·x e β·h.
-- **Ativação PWL:** aproximação linear por partes da função sigmoide, utilizando 5 regiões de intervalos, com 5 equações de reta.
+- **Ativação PWL:** aproximação linear por partes da função sigmoide.
 - **Argmax:** circuito que percorre os 10 valores de saída e retorna o índice do
 maior valor.
 - **Memórias:** RAMs internas para armazenamento da imagem, pesos W_in,
