@@ -356,3 +356,7 @@ acertar ou não o dígito real da imagem.
 |---|---|
 | Ciclos médios por inferência | 610.580 (0x95114) |
 | Frequência máxima de operação | 12,2ms por inferência |
+
+## Referência
+
+PATTERSON, David A.; HENNESSY, John L. Computer Organization and Design: The Hardware/Software Interface. ARM® Edition. San Francisco: Morgan Kaufmann, 2016.
