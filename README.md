@@ -176,9 +176,47 @@ O diagrama de blocos do datapath e da FSM está disponível em [`docs/diagrama_b
 
 ![Diagrama de Blocos](hardware/docs/Datapah+FSM.drawio.svg)
 
+## 6. Descrição do Funcionamento do Projeto
 
+`img_ram.v`: Esta memória armazena os pixels da imagem de entrada que será classificada pela rede neural. Ela possui 784 posições (referente a uma imagem de 28x28 pixels), largura de dados de 8 bits e um barramento de endereço de 10 bits.
 
-## 6. Instalação e Configuração do Ambiente
+`w_in_ram.v`: É a maior memória do sistema, projetada para armazenar os pesos da camada de entrada da rede neural. Possui 100.352 palavras (que correspondem a 784 entradas multiplicadas por 128 neurônios), largura de 16 bits e requer um barramento de endereço de 17 bits.
+
+`beta_ram.v`: Armazena os pesos da camada de saída, chamados de beta. Esta memória tem 1.280 palavras (128 neurônios ocultos vezes 10 classes de saída), largura de 16 bits e barramento de endereço de 11 bits.
+
+`b_ram.v`: Responsável por armazenar os valores de bias (viés) da camada oculta. Contém 128 posições de memória, largura de dados de 16 bits e um barramento de endereço de 7 bits.
+
+`fxp_mul_q412.v`: É um multiplicador de ponto fixo projetado para o formato Q4.12, que consiste em 1 bit de sinal, 3 bits inteiros e 12 bits fracionários. O módulo recebe dois operandos de 16 bits com sinal e realiza a multiplicação, gerando inicialmente um produto de 32 bits. Para manter a precisão e o formato Q4.12 na saída, ele descarta os 12 bits fracionários excedentes utilizando um deslocamento aritmético para a direita (>>> 12), o que preserva o bit de sinal.
+
+`sigmoid_pwl_q412.v`: Implementa uma aproximação linear por partes (PWL - Piecewise Linear) da função de ativação sigmoide, otimizada para o formato de ponto fixo Q4.12. Ele recebe um valor acumulado de 32 bits e retorna um valor de ativação de 16 bits. A lógica divide a curva sigmoide em cinco regiões: valores de entrada muito baixos resultam em 0 ; valores muito altos resultam no limite máximo de 1.0 (representado como 4096) ; e o centro da curva possui uma região linear principal e duas rampas suaves de transição nas bordas.
+
+`key_fall_pulse.v`: Um detector síncrono de borda de descida para os botões da placa. Como os botões físicos são ativos em zero (key_n), o módulo monitora o sinal de entrada usando um registrador de atraso de um ciclo de clock (key_n_d). Quando identifica a transição de solto para pressionado, ele emite um pulso limpo de apenas um ciclo de clock (pulse), garantindo que comandos manuais sejam executados apenas uma vez por clique.
+
+`hex7seg_de1soc.v`: É um decodificador simples de hexadecimal para display de 7 segmentos. Ele recebe um valor de 4 bits (hex) e, através de uma instrução case, mapeia-o para o padrão correspondente de 7 bits (seg) que acende os LEDs corretos na placa para formar números de 0 a 9 e letras de A a F. Caso o valor seja inválido, o padrão padrão apaga todos os segmentos.
+
+`elm_accel.v`: É o núcleo do processamento do sistema, um acelerador de inferência para uma rede neural Extreme Learning Machine (ELM). A rede possui uma camada oculta mapeando 784 entradas para 128 neurônios, e uma camada de saída que mapeia esses 128 neurônios para 10 classes finais. O módulo expõe portas para que os pesos, imagens e bias sejam gravados externamente nas memórias e emite um erro caso haja tentativa de gravação durante uma inferência ativa. Todo o processo é regido por uma Máquina de Estados Finitos (FSM) complexa que calcula resultados sequencialmente: carrega os biases , processa operações MAC (multiplicação e acumulação) da camada oculta iterando sobre os 784 pixels , aplica a função sigmoide combinacional , calcula a camada de saída e, por fim, aplica uma lógica de argmax para determinar qual das 10 classes obteve a maior pontuação de predição. Ao final, o módulo exibe a classe predita (pred) e o total de ciclos de clock gastos na inferência (cycles).
+
+`de1soc_elm_top.v`: É o módulo Top-Level responsável por integrar o coprocessador ELM aos periféricos físicos e botões da placa de desenvolvimento DE1-SoC. Ele traduz sinais físicos de interruptores (SW) e botões (KEY) em comandos e dados para o acelerador elm_accel. Utilizando os interruptores, o usuário seleciona instruções (Opcodes) como carregar imagens, pesos ou iniciar uma inferência. Para facilitar o teste manual usando poucos botões, ele contém uma função interna (expand_q412_3b) que converte chaves de 3 bits em valores válidos de 16 bits de ponto fixo Q4.12. O top-level também mapeia exaustivamente as saídas do acelerador: LEDs vermelhos indicam busy (ocupado), done (concluído) e erros , enquanto seis displays de 7 segmentos mostram visualmente a predição da rede neural, códigos de status (D para concluído, B para ocupado, E para erro), quantidade de ciclos e os dados sendo inseridos.
+
+## Mapeamento de Entradas e Saídas na Placa
+
+| Elemento | Função |
+|---------|--------|
+| `KEY[0]` | Reset do sistema |
+| `KEY[1]` | Executa a instrução configurada nos switches |
+| `LEDR[0]` | Indica estado **busy** (processamento em andamento) |
+| `LEDR[1]` | Indica estado **done** (inferência concluída) |
+| `LEDR[2]` | Indica estado **error** |
+| `LEDR[3]` | Indica proteção ativa (**protect_inference**) |
+| `LEDR[6:4]` | Exibe o **opcode atual** |
+| `LEDR[9:7]` | Exibe o **endereço atual** |
+| `HEX0` | Exibe a predição (**pred**) |
+| `HEX1` | Exibe o status do sistema |
+| `HEX2` e `HEX3` | Exibem a parte baixa do contador de ciclos (**cycles**) |
+| `HEX4` | Mostra o retorno visual da última instrução executada |
+| `HEX5` | Mostra o valor bruto dos switches (**data_sw**) |
+
+## 7. Instalação e Configuração do Ambiente
 
 ### Especificação do Hardware
 
@@ -238,7 +276,7 @@ git clone https://github.com/JeanDevBAh/elm_accel_project.git
 3. Conecte a placa DE1-SoC via USB e utilize o Programmer para carregar o
 co-processador na FPGA.
 
-## 7. Uso de Recursos FPGA
+## 8. Uso de Recursos FPGA
 
 
 
@@ -250,7 +288,7 @@ co-processador na FPGA.
 | M10K (BRAM) | 202 | 397 | ~50.8% |
 
 ---
-## 8. Testes e Validação
+## 9. Testes e Validação
 
 ### Scripts de Apoio
 
@@ -289,7 +327,7 @@ python3 golden_model.py
 
 **5. Comparar** o resultado obtido na inferência com a saída do golden model.
 
-## 9. Análise dos Resultados
+## 10. Análise dos Resultados
 
 A validação do co-processador foi realizada comparando a predição gerada com a saída do `golden_model.py`,
 que replica a mesma lógica de ativação PWL em ponto fixo Q4.12 implementada no RTL.
@@ -316,5 +354,5 @@ acertar ou não o dígito real da imagem.
 
 | Métrica | Valor |
 |---|---|
-| Ciclos médios por inferência | 610.580 |
+| Ciclos médios por inferência | 610.580 (0x95114) |
 | Frequência máxima de operação | 12,2ms por inferência |
