@@ -291,8 +291,7 @@ python3 golden_model.py
 
 ## 9. Análise dos Resultados
 
-A validação do co-processador foi realizada comparando a predição gerada pelo
-hardware simulado (via testbench `elm_accel_tb.v`) com a saída do `golden_model.py`,
+A validação do co-processador foi realizada comparando a predição gerada com a saída do `golden_model.py`,
 que replica a mesma lógica de ativação PWL em ponto fixo Q4.12 implementada no RTL.
 
 Os resultados demonstram comportamento satisfatório para a grande maioria dos vetores
