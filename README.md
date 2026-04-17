@@ -62,8 +62,7 @@ A inferência na ELM segue quatro estágios sequenciais:
 1. **Leitura da entrada:** vetor x com 784 valores (imagem 28×28 pixels em
 escala de cinza, normalizada para [0, 1]).
 2. **Camada oculta:** `h = activation(W_in · x + b)`, onde W_in é uma matriz
-128×784 e b é um vetor de 128 bias. A função de ativação utilizada é a tangente
-hiperbólica (tanh), aproximada em hardware por uma função linear por partes (PWL).
+128×784 e b é um vetor de 128 bias. A função de ativação utilizada é a sigmoide, aproximada em hardware por uma função linear por partes (PWL).
 3. **Camada de saída:** `y = β · h`, onde β é uma matriz 10×128 que projeta os
 128 neurônios ocultos nas 10 classes possíveis.
 4. **Predição:** `pred = argmax(y)`, retornando o índice da classe com maior
@@ -90,11 +89,10 @@ O co-processador segue uma arquitetura sequencial controlada por uma FSM
 da camada oculta, ativação, computação da camada de saída e argmax.
 - **Datapath MAC:** unidade de multiplicação e acumulação responsável pelos
 produtos escalares W_in·x e β·h.
-- **Ativação PWL:** aproximação linear por partes da função tanh, implementada
-via LUT ou comparadores, evitando o custo de hardware de funções transcendentais.
+- **Ativação PWL:** aproximação linear por partes da função sigmoide, utilizando 5 regiões de intervalos, com 5 equações de reta.
 - **Argmax:** circuito que percorre os 10 valores de saída e retorna o índice do
 maior valor.
-- **Memórias:** RAMs e ROMs internas para armazenamento da imagem, pesos W_in,
+- **Memórias:** RAMs internas para armazenamento da imagem, pesos W_in,
 bias b e pesos β.
 
 ### Interface Hardware-Software (MMIO)
@@ -268,7 +266,7 @@ Os scripts utilizados para geração de vetores de teste e validação estão em
 
 O `golden_model.py` serve como referência para validação do RTL. Ele replica 
 exatamente a lógica de ativação implementada no Verilog — incluindo a aproximação 
-PWL (piecewise linear) do sigmoid em ponto fixo Q4.12 — garantindo que qualquer 
+PWL (piecewise linear) da sigmoide em ponto fixo Q4.12 — garantindo que qualquer 
 divergência entre o resultado do hardware e o golden model indique um erro de 
 implementação RTL, e não uma diferença de algoritmo.
 
