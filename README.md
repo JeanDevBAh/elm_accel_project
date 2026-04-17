@@ -287,13 +287,7 @@ python3 converte.py
 python3 golden_model.py
 ```
 
-**4. Executar a simulação RTL:**
-```bash
-iverilog -o sim.out testbench.v elm_accel.v
-vvp sim.out
-```
-
-**5. Comparar** o resultado da simulação com a saída do golden model.
+**5. Comparar** o resultado obtido na inferência com a saída do golden model.
 
 ## 9. Análise dos Resultados
 
