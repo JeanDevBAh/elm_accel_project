@@ -323,6 +323,5 @@ acertar ou não o dígito real da imagem.
 
 | Métrica | Valor |
 |---|---|
-| Acurácia nos vetores de teste | A preencher |
 | Ciclos médios por inferência | 610.580 |
 | Frequência máxima de operação | 12,2ms por inferência |
