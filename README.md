@@ -360,3 +360,42 @@ acertar ou não o dígito real da imagem.
 ## Referência
 
 PATTERSON, David A.; HENNESSY, John L. Computer Organization and Design: The Hardware/Software Interface. ARM® Edition. San Francisco: Morgan Kaufmann, 2016.
+
+---
+
+
+# Marco 2 - Driver (Linux ARM - Assembly + C)
+
+Disciplina: TEC 499 — MI Sistemas Digitais
+
+Instituição: Universidade Estadual de Feira de Santana (UEFS)
+
+Integrantes: Thiago Reis, Tairone Lima, Jean Carlos
+
+Tutor: Wild Freitas
+
+## 1. Definição do Problema
+
+Neste marco, o problema central consiste na integração do IP ao HPS (Hard Processor System). O desafio é estabelecer e validar a comunicação via Memory-Mapped I/O (MMIO) construindo um driver Linux com rotinas críticas em Assembly ARM. A solução deve ser capaz de inicializar o hardware, carregar os parâmetros da rede (pesos e bias), enviar uma imagem e gerenciar a inferência através de polling. Para atestar a estabilidade da conexão, a aplicação deve demonstrar o envio de uma imagem fixa e obter a classificação correta de forma estável e repetida, com métricas e resultados.
+
+## 2. Levantamento de Requisitos
+
+O Marco 02 exige a integração HW/Linux via Driver em Assembly para controle via MMIO, devendo permitir à aplicação:
+
+- Inicializar o hardware.
+- Enviar a imagem, os pesos e o bias para a FPGA.
+- Iniciar a inferência.
+- Aguardar a finalização através de *polling* (ou interrupção).
+- Ler os resultados e as métricas.
+- Garantir a estabilidade da comunicação (enviar 1 imagem fixa e obter classificação correta repetidamente).
+
+Além disso, o enunciado exige para o repositório do Marco 02:
+
+- Projeto Quartus integrando HPS e FPGA (bridges) com o IP mapeado.
+- Driver Linux com rotinas críticas em Assembly ARM e API definida.
+- Código Assembly comentado.
+- Scripts para automação dos testes.
+- READ.ME com detalhamento da solução, ambiente, testes e análise dos resultados.
+
+---
+## 2.1. Fundamentação Teórica 
