@@ -60,7 +60,7 @@ int main() {
 
         printf("Enviando imagem...\n");
         //Envia a imagem
-        enviarImagem(ptr, imagem7); 
+        enviarImagem(ptr, imagem4); 
 
         printf("\n|-------------------------|");
         printf("\n| Iniciando inferência... |");
